@@ -37,7 +37,8 @@ export default function ReceiptListScreen() {
     try {
       setLoading(true);
       const data = await receiptsAPI.getAll();
-      setReceipts(data.receipts || []);
+      console.log('Fetched receipts:', data); // Debug log
+      setReceipts(data || []); // Backend returns receipts directly, not data.receipts
     } catch (error) {
       console.error('Fetch receipts error:', error);
       Alert.alert('Error', 'Failed to load receipts');
