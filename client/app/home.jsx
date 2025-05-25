@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Alert } from 'react-native';
 import {
   TextInput,
@@ -22,6 +22,7 @@ export default function HomeScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [loading, setSaving] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [generatingSlipNumber, setGeneratingSlipNumber] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -43,6 +44,27 @@ export default function HomeScreen() {
     balance: '',
     remarks: '',
   });
+
+  // Auto-generate loading slip number when component loads
+  useEffect(() => {
+    generateLoadingSlipNumber();
+  }, []);
+
+  const generateLoadingSlipNumber = async () => {
+    setGeneratingSlipNumber(true);
+    try {
+      const response = await receiptsAPI.getNextSlipNumber();
+      setFormData(prev => ({
+        ...prev,
+        loadingSlipNumber: response.loadingSlipNumber
+      }));
+    } catch (error) {
+      console.error('Generate slip number error:', error);
+      Alert.alert('Error', 'Failed to generate loading slip number');
+    } finally {
+      setGeneratingSlipNumber(false);
+    }
+  };
 
   const vehicleTypes = [
     { label: 'Truck', value: 'Truck' },
@@ -102,9 +124,9 @@ export default function HomeScreen() {
       await receiptsAPI.create(receiptData);
       Alert.alert('Success', 'Loading slip saved successfully!');
       
-      // Reset form
+      // Reset form and generate new slip number
       setFormData({
-        loadingSlipNumber: '',
+        loadingSlipNumber: '', // Will be updated by generateLoadingSlipNumber
         loadingDate: new Date(),
         customerName: '',
         customerAddress: '',
@@ -122,6 +144,9 @@ export default function HomeScreen() {
         balance: '',
         remarks: '',
       });
+      
+      // Generate new loading slip number for next entry
+      await generateLoadingSlipNumber();
     } catch (error) {
       console.error('Save error:', error);
       Alert.alert('Error', 'Failed to save loading slip. Please try again.');
@@ -211,15 +236,14 @@ export default function HomeScreen() {
       <ScrollView style={styles.scrollView}>
         <Card style={styles.card}>
           <Card.Content>
-            <Title style={styles.title}>Create Loading Slip</Title>
-            <Divider style={styles.divider} />
-
             <TextInput
               label="Loading Slip Number *"
-              value={formData.loadingSlipNumber}
+              value={generatingSlipNumber ? 'Generating...' : formData.loadingSlipNumber}
               onChangeText={(value) => updateFormField('loadingSlipNumber', value)}
               mode="outlined"
-              style={styles.input}
+              style={[styles.input, styles.readOnlyInput]}
+              editable={false}
+              right={generatingSlipNumber ? <TextInput.Icon icon="loading" /> : null}
             />
 
             <View style={styles.dateContainer}>
@@ -460,6 +484,10 @@ const styles = StyleSheet.create({
   },
   disabledInput: {
     backgroundColor: '#f5f5f5',
+  },
+  readOnlyInput: {
+    backgroundColor: '#f0f7f0',
+    borderColor: '#2e7d32',
   },
   row: {
     flexDirection: 'row',

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = 'https://transportkart-loadingslip.onrender.com/api';
 
 // Create axios instance
 const api = axios.create({
@@ -74,6 +74,11 @@ export const receiptsAPI = {
     const response = await api.get(`/download/${id}`, {
       responseType: 'blob',
     });
+    return response.data;
+  },
+
+  getNextSlipNumber: async () => {
+    const response = await api.get('/receipts/next-slip-number');
     return response.data;
   },
 };

@@ -32,7 +32,8 @@ export default function RootLayout() {
         name="home" 
         options={{ 
           title: 'Loading Slip Form',
-          headerBackVisible: false 
+          headerBackVisible: false,
+          headerShown: false 
         }} 
       />
       <Stack.Screen 
