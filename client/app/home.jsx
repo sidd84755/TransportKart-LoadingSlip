@@ -26,7 +26,7 @@ export default function HomeScreen() {
 
   // Form state
   const [formData, setFormData] = useState({
-    loadingSlipNumber: '',
+    loadingSlipNo: '',
     loadingDate: new Date(),
     customerName: '',
     customerAddress: '',
@@ -37,12 +37,12 @@ export default function HomeScreen() {
     driverNumber: '',
     vehicleType: '',
     material: '',
-    ownership: '',
+    ownership: 'TransportKART',
     freight: '',
     detention: '',
     advance: '',
     balance: '',
-    remarks: '',
+    remark: '',
   });
 
   // Auto-generate loading slip number when component loads
@@ -54,9 +54,10 @@ export default function HomeScreen() {
     setGeneratingSlipNumber(true);
     try {
       const response = await receiptsAPI.getNextSlipNumber();
+      console.log('Generated slip number:', response.loadingSlipNumber);
       setFormData(prev => ({
         ...prev,
-        loadingSlipNumber: response.loadingSlipNumber
+        loadingSlipNo: response.loadingSlipNumber
       }));
     } catch (error) {
       console.error('Generate slip number error:', error);
@@ -97,7 +98,7 @@ export default function HomeScreen() {
   };
 
   const validateForm = () => {
-    const required = ['loadingSlipNumber', 'customerName', 'fromCity', 'toCity', 'vehicleNumber'];
+    const required = ['loadingSlipNo', 'customerName', 'fromCity', 'toCity', 'vehicleNumber'];
     const missing = required.filter(field => !formData[field].trim());
     
     if (missing.length > 0) {
@@ -126,7 +127,7 @@ export default function HomeScreen() {
       
       // Reset form and generate new slip number
       setFormData({
-        loadingSlipNumber: '', // Will be updated by generateLoadingSlipNumber
+        loadingSlipNo: '', // Will be updated by generateLoadingSlipNumber
         loadingDate: new Date(),
         customerName: '',
         customerAddress: '',
@@ -137,12 +138,12 @@ export default function HomeScreen() {
         driverNumber: '',
         vehicleType: '',
         material: '',
-        ownership: '',
+        ownership: 'TransportKART',
         freight: '',
         detention: '',
         advance: '',
         balance: '',
-        remarks: '',
+        remark: '',
       });
       
       // Generate new loading slip number for next entry
@@ -237,9 +238,9 @@ export default function HomeScreen() {
         <Card style={styles.card}>
           <Card.Content>
             <TextInput
-              label="Loading Slip Number *"
-              value={generatingSlipNumber ? 'Generating...' : formData.loadingSlipNumber}
-              onChangeText={(value) => updateFormField('loadingSlipNumber', value)}
+              label="Loading Slip Number*"
+              value={generatingSlipNumber ? 'Generating...' : formData.loadingSlipNo}
+              onChangeText={(value) => updateFormField('loadingSlipNo', value)}
               mode="outlined"
               style={[styles.input, styles.readOnlyInput]}
               editable={false}
@@ -398,8 +399,8 @@ export default function HomeScreen() {
 
             <TextInput
               label="Remarks"
-              value={formData.remarks}
-              onChangeText={(value) => updateFormField('remarks', value)}
+              value={formData.remark}
+              onChangeText={(value) => updateFormField('remark', value)}
               mode="outlined"
               multiline
               numberOfLines={3}

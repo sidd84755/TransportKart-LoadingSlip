@@ -35,13 +35,13 @@ router.get('/next-slip-number', async (req, res) => {
     
     // Find the latest loading slip number for this financial year
     const latestReceipt = await Receipt.findOne({
-      loadingSlipNumber: { $regex: `^TPK/${financialYear}/` }
-    }).sort({ loadingSlipNumber: -1 });
+      loadingSlipNo: { $regex: `^TPK/${financialYear}/` }
+    }).sort({ loadingSlipNo: -1 });
     
     let nextNumber = 1;
     if (latestReceipt) {
       // Extract the number from the latest slip number
-      const parts = latestReceipt.loadingSlipNumber.split('/');
+      const parts = latestReceipt.loadingSlipNo.split('/');
       if (parts.length === 3) {
         const lastNumber = parseInt(parts[2]);
         nextNumber = lastNumber + 1;

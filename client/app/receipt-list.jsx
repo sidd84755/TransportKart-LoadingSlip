@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, FlatList, StyleSheet, Alert, RefreshControl } from 'react-native';
 import {
   Card,
@@ -46,18 +46,17 @@ export default function ReceiptListScreen() {
     }
   };
 
-  const filterReceipts = () => {
+  const filterReceipts = useCallback(() => {
     if (!searchQuery.trim()) {
       setFilteredReceipts(receipts);
-      return;
+    } else {
+      const filtered = receipts.filter(receipt =>
+        receipt.loadingSlipNo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        receipt.customerName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredReceipts(filtered);
     }
-
-    const filtered = receipts.filter(receipt => 
-      receipt.loadingSlipNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      receipt.customerName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredReceipts(filtered);
-  };
+  }, [receipts, searchQuery]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -69,13 +68,13 @@ export default function ReceiptListScreen() {
     router.push(`/receipt/${receiptId}`);
   };
 
-  const handleDownloadReceipt = async (receiptId, loadingSlipNumber) => {
+  const handleDownloadReceipt = async (receiptId, loadingSlipNo) => {
     try {
-      await receiptsAPI.downloadPDF(receiptId);
-      Alert.alert('Success', `PDF for ${loadingSlipNumber} downloaded successfully!`);
+      await receiptsAPI.downloadReceipt(receiptId);
+      Alert.alert('Success', `PDF for ${loadingSlipNo} downloaded successfully!`);
     } catch (error) {
       console.error('Download error:', error);
-      Alert.alert('Error', 'Failed to download PDF');
+      Alert.alert('Error', 'Failed to download receipt');
     }
   };
 
@@ -92,7 +91,7 @@ export default function ReceiptListScreen() {
       <Card.Content>
         <View style={styles.cardHeader}>
           <View style={styles.headerLeft}>
-            <Title style={styles.slipNumber}>#{item.loadingSlipNumber}</Title>
+            <Title style={styles.slipNumber}>#{item.loadingSlipNo}</Title>
             <Paragraph style={styles.customerName}>{item.customerName}</Paragraph>
           </View>
           <View style={styles.headerRight}>
@@ -138,7 +137,7 @@ export default function ReceiptListScreen() {
           </Button>
           <Button
             mode="outlined"
-            onPress={() => handleDownloadReceipt(item._id, item.loadingSlipNumber)}
+            onPress={() => handleDownloadReceipt(item._id, item.loadingSlipNo)}
             style={styles.downloadButton}
             icon="download"
             compact

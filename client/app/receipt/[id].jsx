@@ -89,7 +89,7 @@ export default function ReceiptDetailScreen() {
         <Card.Content>
           <View style={styles.header}>
             <Title style={styles.title}>Loading Slip Receipt</Title>
-            <Text style={styles.slipNumber}>#{receipt.loadingSlipNumber}</Text>
+            <Text style={styles.slipNumber}>#{receipt.loadingSlipNo}</Text>
           </View>
           
           <Divider style={styles.divider} />
