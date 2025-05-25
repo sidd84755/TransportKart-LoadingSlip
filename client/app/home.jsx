@@ -33,7 +33,7 @@ export default function HomeScreen() {
     fromCity: '',
     toCity: '',
     truckType: '',
-    vehicleNumber: '',
+    vehicleNo: '',
     driverNumber: '',
     vehicleType: '',
     material: '',
@@ -68,19 +68,38 @@ export default function HomeScreen() {
   };
 
   const vehicleTypes = [
-    { label: 'Truck', value: 'Truck' },
-    { label: 'Trailer', value: 'Trailer' },
-    { label: 'Container', value: 'Container' },
-    { label: 'Tanker', value: 'Tanker' },
-    { label: 'Flatbed', value: 'Flatbed' },
-    { label: 'Refrigerated', value: 'Refrigerated' },
+    { label: '14Ft open', value: '14Ft open' },
+    { label: '14Ft container', value: '14Ft container' },
+    { label: '17Ft open', value: '17Ft open' },
+    { label: '17Ft container', value: '17Ft container' },
+    { label: '19Ft open', value: '19Ft open' },
+    { label: '19Ft container', value: '19Ft container' },
+    { label: '20Ft open', value: '20Ft open' },
+    { label: '20Ft container', value: '20Ft container' },
+    { label: '22Ft open', value: '22Ft open' },
+    { label: '22Ft container', value: '22Ft container' },
+    { label: '24Ft open', value: '24Ft open' },
+    { label: '24Ft container', value: '24Ft container' },
+    { label: '32Ft XL', value: '32Ft XL' },
+    { label: '32Ft XXL', value: '32Ft XXL' },
+    { label: '32Ft XXXL', value: '32Ft XXXL' },
+    { label: '40Ft container', value: '40Ft container' },
+    { label: '10 tyre open truck', value: '10 tyre open truck' },
+    { label: '12 tyre open truck', value: '12 tyre open truck' },
+    { label: '14 tyre open truck', value: '14 tyre open truck' },
+    { label: '16 tyre open truck', value: '16 tyre open truck' },
+    { label: '18 tyre open truck', value: '18 tyre open truck' },
+    { label: '20 tyre open truck', value: '20 tyre open truck' },
+    { label: '22 tyre open truck', value: '22 tyre open truck' },
+    { label: '24 tyre open truck', value: '24 tyre open truck' },
+    { label: '40Ft trailer lower bed', value: '40Ft trailer lower bed' },
+    { label: '40Ft trailer higher bed', value: '40Ft trailer higher bed' },
+    { label: '40Ft trailer semi high bed', value: '40Ft trailer semi high bed' },
   ];
 
   const ownershipTypes = [
     { label: 'TransportKART', value: 'TransportKART' },
     { label: 'State Logistics', value: 'State Logistics' },
-    { label: 'Private', value: 'Private' },
-    { label: 'Leased', value: 'Leased' },
   ];
 
   const updateFormField = (field, value) => {
@@ -98,8 +117,26 @@ export default function HomeScreen() {
   };
 
   const validateForm = () => {
-    const required = ['loadingSlipNo', 'customerName', 'fromCity', 'toCity', 'vehicleNumber'];
-    const missing = required.filter(field => !formData[field].trim());
+    const required = [
+      'loadingSlipNo', 'customerName', 'customerAddress', 'fromCity', 'toCity', 
+      'truckType', 'vehicleNo', 'driverNumber', 'freight', 'vehicleType', 
+      'material', 'ownership'
+    ];
+    
+    const missing = [];
+    
+    // Check string fields
+    const stringFields = ['loadingSlipNo', 'customerName', 'customerAddress', 'fromCity', 'toCity', 'truckType', 'vehicleNo', 'driverNumber', 'vehicleType', 'material', 'ownership'];
+    stringFields.forEach(field => {
+      if (!formData[field] || !formData[field].toString().trim()) {
+        missing.push(field);
+      }
+    });
+    
+    // Check numeric fields
+    if (!formData.freight || parseFloat(formData.freight) < 0) {
+      missing.push('freight');
+    }
     
     if (missing.length > 0) {
       Alert.alert('Validation Error', `Please fill in: ${missing.join(', ')}`);
@@ -134,7 +171,7 @@ export default function HomeScreen() {
         fromCity: '',
         toCity: '',
         truckType: '',
-        vehicleNumber: '',
+        vehicleNo: '',
         driverNumber: '',
         vehicleType: '',
         material: '',
@@ -150,7 +187,17 @@ export default function HomeScreen() {
       await generateLoadingSlipNumber();
     } catch (error) {
       console.error('Save error:', error);
-      Alert.alert('Error', 'Failed to save loading slip. Please try again.');
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      
+      let errorMessage = 'Failed to save loading slip. Please try again.';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      }
+      
+      Alert.alert('Error', errorMessage);
     } finally {
       setSaving(false);
     }
@@ -276,7 +323,7 @@ export default function HomeScreen() {
             />
 
             <TextInput
-              label="Customer Address"
+              label="Customer Address *"
               value={formData.customerAddress}
               onChangeText={(value) => updateFormField('customerAddress', value)}
               mode="outlined"
@@ -303,7 +350,7 @@ export default function HomeScreen() {
             </View>
 
             <TextInput
-              label="Truck Type"
+              label="Truck Type *"
               value={formData.truckType}
               onChangeText={(value) => updateFormField('truckType', value)}
               mode="outlined"
@@ -312,14 +359,14 @@ export default function HomeScreen() {
 
             <TextInput
               label="Vehicle Number *"
-              value={formData.vehicleNumber}
-              onChangeText={(value) => updateFormField('vehicleNumber', value)}
+              value={formData.vehicleNo}
+              onChangeText={(value) => updateFormField('vehicleNo', value)}
               mode="outlined"
               style={styles.input}
             />
 
             <TextInput
-              label="Driver Number"
+              label="Driver Number *"
               value={formData.driverNumber}
               onChangeText={(value) => updateFormField('driverNumber', value)}
               mode="outlined"
@@ -328,18 +375,23 @@ export default function HomeScreen() {
             />
 
             <View style={styles.pickerContainer}>
-              <Text style={styles.pickerLabel}>Vehicle Type</Text>
+              <Text style={styles.pickerLabel}>Vehicle Type *</Text>
               <RNPickerSelect
                 placeholder={{ label: 'Select Vehicle Type', value: null }}
                 items={vehicleTypes}
                 onValueChange={(value) => updateFormField('vehicleType', value)}
                 value={formData.vehicleType}
                 style={pickerSelectStyles}
+                doneText="Done"
+                onDonePress={() => {
+                  // Optional: Add any logic when done is pressed
+                  console.log('Vehicle type picker closed');
+                }}
               />
             </View>
 
             <TextInput
-              label="Material"
+              label="Material *"
               value={formData.material}
               onChangeText={(value) => updateFormField('material', value)}
               mode="outlined"
@@ -347,13 +399,18 @@ export default function HomeScreen() {
             />
 
             <View style={styles.pickerContainer}>
-              <Text style={styles.pickerLabel}>Ownership</Text>
+              <Text style={styles.pickerLabel}>Ownership *</Text>
               <RNPickerSelect
                 placeholder={{ label: 'Select Ownership', value: null }}
                 items={ownershipTypes}
                 onValueChange={(value) => updateFormField('ownership', value)}
                 value={formData.ownership}
                 style={pickerSelectStyles}
+                doneText="Done"
+                onDonePress={() => {
+                  // Optional: Add any logic when done is pressed
+                  console.log('Ownership picker closed');
+                }}
               />
             </View>
 
@@ -362,7 +419,7 @@ export default function HomeScreen() {
 
             <View style={styles.row}>
               <TextInput
-                label="Freight (₹)"
+                label="Freight (₹) *"
                 value={formData.freight}
                 onChangeText={(value) => updateFormField('freight', value)}
                 mode="outlined"

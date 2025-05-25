@@ -29,12 +29,13 @@ const getAllReceipts = async (req, res) => {
   try {
     const receipts = await Receipt.find()
       .sort({ createdAt: -1 })
-      .select('loadingSlipNo customerName loadingDate freight balance createdAt');
+      .select('_id loadingSlipNo customerName loadingDate fromCity toCity vehicleNo freight balance createdAt');
 
     const formattedReceipts = receipts.map(receipt => ({
       ...receipt.toObject(),
       loadingDate: moment(receipt.loadingDate).format('DD-MM-YYYY'),
-      createdAt: moment(receipt.createdAt).format('DD-MM-YYYY HH:mm')
+      createdAt: moment(receipt.createdAt).format('DD-MM-YYYY HH:mm'),
+      vehicleNumber: receipt.vehicleNo
     }));
 
     res.json(formattedReceipts);

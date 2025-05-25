@@ -70,7 +70,7 @@ export default function ReceiptListScreen() {
 
   const handleDownloadReceipt = async (receiptId, loadingSlipNo) => {
     try {
-      await receiptsAPI.downloadReceipt(receiptId);
+      await receiptsAPI.downloadPDF(receiptId);
       Alert.alert('Success', `PDF for ${loadingSlipNo} downloaded successfully!`);
     } catch (error) {
       console.error('Download error:', error);
