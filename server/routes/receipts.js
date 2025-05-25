@@ -16,19 +16,7 @@ router.use(authMiddleware);
 // GET /api/receipts - Get all receipts
 router.get('/', getAllReceipts);
 
-// POST /api/receipts - Create new receipt
-router.post('/', createReceipt);
-
-// GET /api/receipts/:id - Get single receipt
-router.get('/:id', getReceiptById);
-
-// PUT /api/receipts/:id - Update receipt
-router.put('/:id', updateReceipt);
-
-// DELETE /api/receipts/:id - Delete receipt
-router.delete('/:id', deleteReceipt);
-
-// Generate next loading slip number
+// Generate next loading slip number - MUST come before /:id route
 router.get('/next-slip-number', async (req, res) => {
   try {
     // Get current financial year (April to March)
@@ -70,5 +58,17 @@ router.get('/next-slip-number', async (req, res) => {
     res.status(500).json({ message: 'Failed to generate loading slip number' });
   }
 });
+
+// POST /api/receipts - Create new receipt
+router.post('/', createReceipt);
+
+// GET /api/receipts/:id - Get single receipt
+router.get('/:id', getReceiptById);
+
+// PUT /api/receipts/:id - Update receipt
+router.put('/:id', updateReceipt);
+
+// DELETE /api/receipts/:id - Delete receipt
+router.delete('/:id', deleteReceipt);
 
 module.exports = router; 
