@@ -23,6 +23,19 @@ api.interceptors.request.use(
   }
 );
 
+// Add response interceptor to handle auth errors
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      // Clear the invalid token
+      await AsyncStorage.removeItem('authToken');
+      console.log('Auth token cleared due to 401 error');
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Auth API
 export const authAPI = {
   login: async (username, password) => {

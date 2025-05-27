@@ -10,124 +10,146 @@ const generateReceiptHTML = (receipt) => {
         <style>
             @page {
                 size: A4;
-                margin: 0.5in;
+                margin: 0.3in;
+            }
+            
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
             
             body {
                 font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0;
-                color: #000;
-                font-size: 12px;
+                font-size: 11px;
                 line-height: 1.2;
+                color: #000;
             }
             
-            .header {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
+            .loading-slip-header {
+                background-color: #f0f0f0;
+                padding: 8px;
+                text-align: center;
+                font-weight: bold;
+                font-size: 14px;
                 margin-bottom: 15px;
+                border: 1px solid #ccc;
+            }
+            
+            .header-section {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                margin-bottom: 20px;
                 border-bottom: 2px solid #000;
                 padding-bottom: 15px;
             }
             
-            .logo-section {
-                display: flex;
-                align-items: center;
-                gap: 15px;
+            .logo-container {
+                width: 80px;
+                text-align: center;
             }
             
-            .logo {
+            .logo-img {
                 width: 60px;
                 height: 60px;
-                background: linear-gradient(45deg, #4CAF50, #2E7D32);
-                border-radius: 8px;
+                background: #4CAF50;
+                border-radius: 5px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: white;
-                font-size: 24px;
                 font-weight: bold;
+                font-size: 16px;
+                margin-bottom: 5px;
             }
             
-            .company-info {
-                text-align: center;
+            .logo-text {
+                font-size: 8px;
+                font-weight: bold;
+                color: #4CAF50;
+            }
+            
+            .company-details {
                 flex: 1;
-                margin: 0 20px;
+                text-align: center;
+                padding: 0 20px;
             }
             
-            .company-header {
-                color: #D32F2F;
-                font-size: 14px;
+            .smart-ems {
+                color: #d32f2f;
                 font-weight: bold;
+                font-size: 12px;
                 margin-bottom: 2px;
             }
             
             .company-name {
-                font-size: 24px;
+                font-size: 20px;
                 font-weight: bold;
-                color: #2E7D32;
+                color: #4CAF50;
                 margin-bottom: 8px;
             }
             
-            .company-address {
-                font-size: 10px;
-                color: #666;
-                margin-bottom: 4px;
+            .reg-office {
+                font-size: 9px;
+                margin-bottom: 3px;
             }
             
-            .company-reg {
-                font-size: 10px;
+            .tax-details {
+                font-size: 9px;
                 font-weight: bold;
-                color: #333;
             }
             
-            .contact-section {
+            .contact-info {
+                width: 200px;
                 text-align: right;
-                font-size: 11px;
-                color: #666;
+                font-size: 9px;
                 line-height: 1.3;
             }
             
-            .contact-item {
+            .contact-row {
                 margin-bottom: 2px;
                 display: flex;
                 align-items: center;
                 justify-content: flex-end;
-                gap: 5px;
             }
             
-            .customer-loading-section {
+            .contact-icon {
+                margin-right: 3px;
+            }
+            
+            .customer-loading-row {
                 display: flex;
                 justify-content: space-between;
-                margin: 20px 0;
-                border-bottom: 1px solid #ddd;
+                margin-bottom: 20px;
+                border-bottom: 1px solid #000;
                 padding-bottom: 15px;
             }
             
-            .customer-info, .loading-info {
+            .customer-section, .loading-section {
                 width: 48%;
             }
             
-            .info-row {
+            .info-line {
                 margin-bottom: 8px;
-                font-size: 12px;
+                display: flex;
             }
             
-            .label {
+            .info-label {
                 font-weight: bold;
-                display: inline-block;
                 width: 120px;
-                color: #333;
+                margin-right: 10px;
             }
             
-            .value {
-                color: #000;
+            .info-value {
+                flex: 1;
+                border-bottom: 1px solid #000;
+                padding-bottom: 2px;
             }
             
-            .letter-section {
+            .letter-content {
                 margin: 20px 0;
-                font-size: 12px;
+                text-align: justify;
                 line-height: 1.4;
             }
             
@@ -136,14 +158,13 @@ const generateReceiptHTML = (receipt) => {
                 margin-bottom: 10px;
             }
             
-            .letter-body {
-                text-align: justify;
+            .letter-text {
                 margin-bottom: 10px;
             }
             
-            .loading-date-highlight {
-                font-weight: bold;
+            .loading-date {
                 text-decoration: underline;
+                font-weight: bold;
             }
             
             .details-table {
@@ -158,9 +179,8 @@ const generateReceiptHTML = (receipt) => {
                 border: 1px solid #000;
                 padding: 8px 4px;
                 text-align: center;
-                font-size: 10px;
                 font-weight: bold;
-                vertical-align: middle;
+                font-size: 10px;
             }
             
             .details-table td {
@@ -168,68 +188,69 @@ const generateReceiptHTML = (receipt) => {
                 padding: 8px 4px;
                 text-align: center;
                 font-size: 10px;
-                vertical-align: middle;
             }
             
             .payment-section {
                 display: flex;
-                justify-content: space-between;
-                margin: 20px 0;
-                gap: 30px;
+                gap: 20px;
+                margin: 25px 0;
             }
             
-            .bank-info, .payment-details {
+            .bank-box, .payment-box {
                 flex: 1;
-                border: 1px solid #ddd;
-                padding: 15px;
-                border-radius: 5px;
+                border: 2px solid #000;
+                padding: 12px;
             }
             
-            .section-title {
+            .box-title {
                 font-weight: bold;
-                font-size: 12px;
+                text-align: center;
                 margin-bottom: 10px;
                 text-decoration: underline;
+                font-size: 11px;
             }
             
             .bank-row, .payment-row {
-                margin-bottom: 5px;
-                font-size: 11px;
                 display: flex;
                 justify-content: space-between;
+                margin-bottom: 6px;
+                font-size: 10px;
+            }
+            
+            .bank-label {
+                font-weight: bold;
+                width: 100px;
             }
             
             .payment-row.balance {
                 font-weight: bold;
-                border-top: 1px solid #333;
-                padding-top: 5px;
+                border-top: 1px solid #000;
+                padding-top: 6px;
                 margin-top: 8px;
             }
             
             .terms-section {
-                margin: 20px 0;
+                margin: 25px 0;
             }
             
             .terms-title {
                 font-weight: bold;
-                font-size: 12px;
-                margin-bottom: 10px;
                 text-decoration: underline;
+                margin-bottom: 10px;
+                font-size: 11px;
             }
             
-            .terms-columns {
-                display: flex;
-                gap: 20px;
-            }
-            
-            .terms-column {
-                flex: 1;
-            }
-            
-            .terms-item {
-                font-size: 10px;
-                margin-bottom: 5px;
+            .terms-list {
+                font-size: 9px;
                 line-height: 1.3;
+            }
+            
+            .terms-list ol {
+                padding-left: 15px;
+            }
+            
+            .terms-list li {
+                margin-bottom: 4px;
             }
             
             .signature-section {
@@ -239,91 +260,97 @@ const generateReceiptHTML = (receipt) => {
             
             .signature-box {
                 display: inline-block;
-                border: 1px solid #333;
+                border: 2px solid #000;
                 padding: 20px;
                 text-align: center;
-                border-radius: 5px;
-                min-width: 150px;
+                width: 180px;
             }
             
-            .signature-logo {
-                font-size: 16px;
+            .signature-title {
                 font-weight: bold;
-                color: #2E7D32;
+                font-size: 12px;
                 margin-bottom: 5px;
             }
             
             .signature-company {
                 font-weight: bold;
-                font-size: 12px;
-                margin-bottom: 10px;
+                font-size: 11px;
+                margin-bottom: 15px;
             }
             
             .signature-authority {
                 font-size: 10px;
-                color: #666;
+                font-weight: bold;
             }
         </style>
     </head>
     <body>
+        <!-- Loading Slip Header -->
+        <div class="loading-slip-header">Loading Slip</div>
+        
         <!-- Header Section -->
-        <div class="header">
-            <div class="logo-section">
-                <div class="logo">🚛</div>
-                <div style="font-size: 10px; font-weight: bold; color: #2E7D32;">TRANSPORTKART</div>
+        <div class="header-section">
+            <div class="logo-container">
+                <div class="logo-img">🚛</div>
+                <div class="logo-text">TRANSPORTKART</div>
             </div>
             
-            <div class="company-info">
-                <div class="company-header">SmART-EMS</div>
+            <div class="company-details">
+                <div class="smart-ems">SmART-EMS</div>
                 <div class="company-name">TRANSPORTKART</div>
-                <div class="company-address">
-                    Reg. Office: H-48, Shram Colony, Loni, Ghaziabad, Uttar Pradesh - 201102
-                </div>
-                <div class="company-reg">
-                    GSTIN: 09DTIPK6278L1ZU | PAN No: DTIPK6278L
-                </div>
+                <div class="reg-office">Reg. Office : H-48, Shriram Colony, Loni, Ghaziabad, Uttar Pradesh - 201102</div>
+                <div class="tax-details">GSTIN : 09DTIPK6278L1ZU &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PAN No. DTIPK6278L</div>
             </div>
             
-            <div class="contact-section">
-                <div class="contact-item">📧 connect@transportkart.com</div>
-                <div class="contact-item">📞 +91-7827568785</div>
-                <div class="contact-item">🌐 www.transportkart.com</div>
+            <div class="contact-info">
+                <div class="contact-row">
+                    <span class="contact-icon">📧</span>
+                    <span>connect@transportkart.com</span>
+                </div>
+                <div class="contact-row">
+                    <span class="contact-icon">📞</span>
+                    <span>+91-7827568785</span>
+                </div>
+                <div class="contact-row">
+                    <span class="contact-icon">🌐</span>
+                    <span>www.transportkart.com</span>
+                </div>
             </div>
         </div>
 
         <!-- Customer and Loading Information -->
-        <div class="customer-loading-section">
-            <div class="customer-info">
-                <div class="info-row">
-                    <span class="label">Customer Name:</span>
-                    <span class="value">${receipt.customerName}</span>
+        <div class="customer-loading-row">
+            <div class="customer-section">
+                <div class="info-line">
+                    <span class="info-label">Customer Name :</span>
+                    <span class="info-value">${receipt.customerName}</span>
                 </div>
-                <div class="info-row">
-                    <span class="label">Address:</span>
-                    <span class="value">${receipt.customerAddress}</span>
+                <div class="info-line">
+                    <span class="info-label">Address :</span>
+                    <span class="info-value">${receipt.customerAddress}</span>
                 </div>
             </div>
             
-            <div class="loading-info">
-                <div class="info-row">
-                    <span class="label">Loading Slip No.:</span>
-                    <span class="value">${receipt.loadingSlipNo}</span>
+            <div class="loading-section">
+                <div class="info-line">
+                    <span class="info-label">Loading Slip No. :</span>
+                    <span class="info-value">${receipt.loadingSlipNo}</span>
                 </div>
-                <div class="info-row">
-                    <span class="label">Loading Date:</span>
-                    <span class="value">${moment(receipt.loadingDate).format('DD-MM-YYYY')}</span>
+                <div class="info-line">
+                    <span class="info-label">Loading Date :</span>
+                    <span class="info-value">${moment(receipt.loadingDate).format('DD-MM-YYYY')}</span>
                 </div>
             </div>
         </div>
 
-        <!-- Formal Letter -->
-        <div class="letter-section">
+        <!-- Letter Content -->
+        <div class="letter-content">
             <div class="greeting">Dear Sir / Madam,</div>
-            <div class="letter-body">
+            <div class="letter-text">
                 We are sending our truck based on our earlier discussion regarding the same. Requesting you please prepare load for the below truck on our behalf & oblige. Upcoming
             </div>
-            <div class="letter-body">
-                loading on Dated: <span class="loading-date-highlight">${moment(receipt.loadingDate).format('DD-MM-YYYY')}</span>.
+            <div class="letter-text">
+                loading on Dated : <span class="loading-date">${moment(receipt.loadingDate).format('DD-MM-YYYY')}</span> .
             </div>
         </div>
 
@@ -348,7 +375,7 @@ const generateReceiptHTML = (receipt) => {
                     <td>${receipt.vehicleNo}</td>
                     <td>${receipt.driverNumber}</td>
                     <td>${receipt.vehicleType}</td>
-                    <td>-</td>
+                    <td>18 Ton</td>
                     <td>${receipt.material}</td>
                     <td>${parseFloat(receipt.freight).toFixed(2)}</td>
                 </tr>
@@ -357,28 +384,28 @@ const generateReceiptHTML = (receipt) => {
 
         <!-- Payment Section -->
         <div class="payment-section">
-            <div class="bank-info">
-                <div class="section-title">Bank Information For Payment</div>
+            <div class="bank-box">
+                <div class="box-title">Bank Information For Payment</div>
                 <div class="bank-row">
-                    <span><strong>Payee Name</strong></span>
+                    <span class="bank-label">Payee Name</span>
                     <span>SMART EMS</span>
                 </div>
                 <div class="bank-row">
-                    <span><strong>Account Number</strong></span>
-                    <span>459900510005224</span>
+                    <span class="bank-label">Account Number</span>
+                    <span>459900210005230</span>
                 </div>
                 <div class="bank-row">
-                    <span><strong>IFSC Code</strong></span>
-                    <span>PUNJAB45990</span>
+                    <span class="bank-label">IFSC Code</span>
+                    <span>PUNB0455900</span>
                 </div>
                 <div class="bank-row">
-                    <span><strong>QR ID</strong></span>
-                    <span>transportkart@axisbank</span>
+                    <span class="bank-label">QR ID</span>
+                    <span>transportkart@axl</span>
                 </div>
             </div>
             
-            <div class="payment-details">
-                <div class="section-title">Payment Details</div>
+            <div class="payment-box">
+                <div class="box-title">Payment Details</div>
                 <div class="payment-row">
                     <span>Loading Detention</span>
                     <span>${parseFloat(receipt.detention || 0).toFixed(2)}</span>
@@ -397,24 +424,22 @@ const generateReceiptHTML = (receipt) => {
         <!-- Terms & Conditions -->
         <div class="terms-section">
             <div class="terms-title">Terms & Conditions</div>
-            <div class="terms-columns">
-                <div class="terms-column">
-                    <div class="terms-item">1. GST will be Paid by Customer / Consignee</div>
-                    <div class="terms-item">2. GST exempted is given to H.O to BSCOCO TRANSPORT Company</div>
-                    <div class="terms-item">3. In case of Demurrage / Shortage Will not Liable by I/O Truckers EMS</div>
-                </div>
-                <div class="terms-column">
-                    <div class="terms-item">4. After expiry of 3 months will not Liable by I/O Truckers EMS</div>
-                    <div class="terms-item">5. Any Type of Deduction Will be Not Accepted Without SMARTEMS Approval</div>
-                    <div class="terms-item">6. All claims Subject to City GHAZIABAD Jurisdiction</div>
-                </div>
+            <div class="terms-list">
+                <ol>
+                    <li>GST will be Paid By Consigner / Consignee</li>
+                    <li>GST exempted is given on hire to GOODS TRANSPORT Company</li>
+                    <li>Any Type Of Damage / Shortage Will Not Liability Of SmART-EMS</li>
+                    <li>If Material Will Theft Then No Any Deduction Will Be Accepted. Settle Loss With Insurance Company.</li>
+                    <li>Any Type Of Deduction Will Be Not Accepted Without SmART-EMS Approval</li>
+                    <li>All Dispute Subject To Our GHAZIABAD Jurisdiction</li>
+                </ol>
             </div>
         </div>
 
         <!-- Signature Section -->
         <div class="signature-section">
             <div class="signature-box">
-                <div class="signature-logo">📱 SmART-EMS</div>
+                <div class="signature-title">SmART-EMS</div>
                 <div class="signature-company">TRANSPORTKART</div>
                 <div class="signature-authority">Signing Authority</div>
             </div>
@@ -432,14 +457,13 @@ const generatePDF = (receipt) => {
       format: 'A4',
       orientation: 'portrait',
       border: {
-        top: '0.5in',
-        right: '0.5in',
-        bottom: '0.5in',
-        left: '0.5in'
+        top: '0.3in',
+        right: '0.3in',
+        bottom: '0.3in',
+        left: '0.3in'
       },
       type: 'pdf',
-      quality: '100',
-      dpi: 300
+      quality: '100'
     };
 
     pdf.create(html, options).toBuffer((err, buffer) => {
